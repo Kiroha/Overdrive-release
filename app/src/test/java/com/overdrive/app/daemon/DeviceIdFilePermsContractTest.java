@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -17,7 +16,6 @@ import java.nio.file.Files;
  * otherwise swap the key seed. The app only reads it (writes go through the
  * adb-shell executor), so owner-write-only (0644) is safe.
  */
-@RunWith(RobolectricTestRunner.class)
 public class DeviceIdFilePermsContractTest {
     @Test
     public void deviceIdFileIsNotWorldWritable() throws Exception {

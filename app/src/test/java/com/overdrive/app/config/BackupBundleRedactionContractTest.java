@@ -6,13 +6,11 @@ import static org.junit.Assert.assertTrue;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 /**
  * V60-04 contract: export bundles must never contain the `auth`/`pinLock`
  * sections (plaintext deviceSecret / PIN) nor the top-level `did` key seed.
  */
-@RunWith(RobolectricTestRunner.class)
 public class BackupBundleRedactionContractTest {
     @Test
     public void secretSectionsAndDidAreRedactedFromExportShape() {

@@ -16,7 +16,7 @@ public final class MqttCommandAuth {
     public static boolean verify(String topic, String payload, String sig) {
         if (sig == null || sig.isEmpty()) return false;
         try {
-            com.overdrive.app.auth.AuthState st = com.overdrive.app.auth.AuthManager.getState();
+            com.overdrive.app.auth.AuthManager.AuthState st = com.overdrive.app.auth.AuthManager.getState();
             if (st == null || st.deviceSecret == null || st.deviceSecret.isEmpty()) return false;
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(st.deviceSecret.getBytes("UTF-8"), "HmacSHA256"));

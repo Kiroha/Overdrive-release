@@ -286,7 +286,11 @@ open class MainActivity : AppCompatActivity() {
             // Generate device ID early - this syncs to file for daemon compatibility
             // Must happen BEFORE any daemon starts
             val deviceId = com.overdrive.app.util.DeviceIdGenerator.generateDeviceId(this)
-            android.util.Log.i("MainActivity", "Device ID initialized: $deviceId")
+
+    /** SECURITY (V60-05): never log the raw device ID — it is the credential-cipher key seed. */
+    private fun redactDid(did: String?): String =
+        if (did.isNullOrEmpty() || did.length <= 8) "****" else did.take(4) + "…" + did.takeLast(4) + " (redacted)"
+            android.util.Log.i("MainActivity", "Device ID initialized: " + redactDid(deviceId))
 
             // Apply BYD whitelist (ACC + data cache) to prevent background killing
             // CRITICAL: Run on background thread to avoid blocking UI on boot

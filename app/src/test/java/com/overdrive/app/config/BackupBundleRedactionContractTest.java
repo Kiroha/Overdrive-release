@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
  */
 public class BackupBundleRedactionContractTest {
     @Test
-    public void secretSectionsAndDidAreRedactedFromExportShape() {
+    public void secretSectionsAndDidAreRedactedFromExportShape() throws Exception {
         JSONObject unified = new JSONObject();
         unified.put("auth", new JSONObject().put("deviceSecret", "s3cret").put("deviceId", "did"));
         unified.put("pinLock", new JSONObject().put("pin", "1234"));

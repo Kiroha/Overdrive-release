@@ -179,10 +179,6 @@ object DeviceIdGenerator {
             command = "echo '$id' > $ID_FILE",
             callback = object : AdbShellExecutor.ShellCallback {
                 override fun onSuccess(output: String) {
-
-    /** SECURITY (V60-05): never log the raw DID — it is the credential-cipher key seed. */
-    private fun redactDid(id: String?): String =
-        if (id.isNullOrEmpty() || id.length <= 8) "****" else id.take(4) + "…" + id.takeLast(4) + " (redacted)"
                     Log.d(TAG, "Device ID saved to file via ADB: " + redactDeviceIdForLog(id))
                 }
                 override fun onError(error: String) {

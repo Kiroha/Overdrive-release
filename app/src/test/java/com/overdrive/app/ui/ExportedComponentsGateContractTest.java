@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 public class ExportedComponentsGateContractTest {
     @Test
     public void launcherHasNoCustomActionFilter_andReceiversAreGated() throws Exception {
-        String manifest = new String(Files.readAllBytes(Paths.get("app/src/main/AndroidManifest.xml")));
+        String manifest = new String(Files.readAllBytes(Paths.get("src/main/AndroidManifest.xml")));
         // MainActivity block must not expose START_LOCATION_ACTIVITY anymore
         int ma = manifest.indexOf("com.overdrive.app.ui.MainActivity\"");
         int maEnd = manifest.indexOf("</activity>", ma);

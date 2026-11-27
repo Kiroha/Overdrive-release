@@ -69,12 +69,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .now .ic{width:44px;height:44px;font-size:18px;border-radius:12px}
 .now small{display:block;font-size:11px;color:var(--pri);letter-spacing:.04em}
 .now span{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:110px}
-.cbtn{height:48px;min-width:48px;border-radius:8px;background:var(--sch);display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;padding:0 12px}
+.cbtn{height:56px;min-width:56px;border-radius:8px;background:var(--sch);display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;padding:0 12px}
 .stop{background:var(--errc);color:var(--onerrc);font-weight:500;padding:0 18px}
 .vsep{width:1px;height:48px;background:var(--ov);margin:0 6px}
 .strip{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
-.st{width:64px;height:64px;border-radius:12px;background:var(--sch);display:grid;place-items:center;position:relative;cursor:pointer;flex:none;border:2px solid transparent;transition:transform .12s}
-.st .ic{width:40px;height:40px;font-size:17px;border-radius:11px}
+.st{width:76px;height:76px;border-radius:12px;background:var(--sch);display:grid;place-items:center;position:relative;cursor:pointer;flex:none;border:2px solid transparent;transition:transform .12s}
+.st .ic{width:44px;height:44px;font-size:18px;border-radius:12px}
+.sdiv{height:1px;background:var(--ov);margin:4px 0}
+.srow{display:flex;align-items:center;gap:12px}
+.slbl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--onv);font-weight:500;max-width:96px;flex:none}
+.notice{background:#93000A;color:#FFDAD6;border-radius:12px;padding:16px;font-size:15px;font-weight:500;margin:-4px 0 12px}
+.dimmed{opacity:.38}
 .st.live{border-color:var(--pri);background:rgba(93,219,182,.12)}
 .st.live:after{content:"";position:absolute;bottom:4px;width:16px;height:3px;border-radius:2px;background:var(--pri)}
 .st.pressing{transform:scale(.92);border-color:var(--onsec)}
@@ -179,6 +184,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
  <symbol id="resize" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
  <symbol id="tools" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></symbol>
  <symbol id="power" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3v8M6.3 7a8 8 0 1 0 11.4 0"/></symbol>
+ <symbol id="starf" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/></symbol>
+ <symbol id="expand" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M6 9l6 6 6-6"/></symbol>
  <symbol id="star" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/></symbol>
  <symbol id="dash" viewBox="0 0 24 24"><path fill="currentColor" d="M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z"/></symbol>
  <symbol id="car" viewBox="0 0 24 24"><path fill="currentColor" d="M18.9 6a1.5 1.5 0 0 0-1.4-1h-11a1.5 1.5 0 0 0-1.4 1L3 12v8a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h12v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-8zM5 11l1.5-4.5h11L19 11z"/></symbol>
@@ -256,14 +263,16 @@ const rail = () => `<nav class="rail"><div class="brand">OD</div>
   <div class="ri on">${I('proj')}</div><div class="ri">${I('route')}</div></nav>`;
 
 function idleMain(){
+  const notice = S.notice ? `<div class="notice">Set Vehicle Mode to DiLink 5 in Diagnostics, then restart the camera service.</div>` : '';
   const fav = S.fav.map(A), rest = APPS.filter(a=>!S.fav.includes(a.id)).slice(0,12);
   return `<main>
     <header><h1>Projection</h1></header>
     <div class="hero"><div class="cl-ill">driver cluster</div>
       <div style="flex:1"><b>Tap an app to cast it to the cluster</b><span>Long-press an app for its window position, size and tools.</span></div>
       <button class="ibtn" data-act="gear" title="Projection settings">${I('gear')}</button></div>
+    ${notice}<div class="${S.notice?'dimmed':''}">
     ${fav.length ? `<div class="lbl">Favorites</div><div class="grid">${fav.map(tile).join('')}</div>` : ''}
-    <div class="lbl">All apps</div><div class="grid">${rest.map(tile).join('')}</div>
+    <div class="lbl">All apps</div><div class="grid">${rest.map(tile).join('')}</div></div>
   </main>`;
 }
 function liveMain(){
@@ -292,7 +301,9 @@ function liveMain(){
         <button class="cbtn stop" data-act="stop">${I('stop')}Stop</button>
         <button class="cbtn" data-act="gear" title="Projection settings">${I('gear')}</button>
       </div>
-      <div class="strip">${stripIds.map(id=>`<div class="st ${id===a.id?'live':''}" data-app="${id}" title="${A(id).name}">${icon(A(id))}</div>`).join('')}</div>
+      <div class="sdiv"></div>
+      <div class="srow"><span class="slbl">Switch app</span>
+        <div class="strip">${stripIds.map(id=>`<div class="st ${id===a.id?'live':''}" data-app="${id}" title="${A(id).name}">${icon(A(id))}</div>`).join('')}</div></div>
     </div>
   </main>
   <div class="fsbar">
@@ -311,7 +322,7 @@ function menuHtml(){
     <div class="sep"></div>
     <button class="item" data-act="resize">${I('resize')}<span>Resize</span><small>on the mirror</small></button>
     <button class="item" data-act="tools">${I('tools')}<span>App tools</span><small>App DPI, keyboard</small></button>
-    <button class="item" data-act="fav">${I('star')}<span>${fav?'Remove from favorites':'Add to favorites'}</span></button>
+    <button class="item" data-act="fav">${I(fav?'starf':'star')}<span>${fav?'Remove from favorites':'Add to favorites'}</span></button>
     ${isLive ? `<button class="cta danger" data-act="stop">${I('stop')}Stop casting</button>`
              : `<button class="cta" data-act="cast">${I('cast')}Cast to cluster</button>`}`;
 }
@@ -327,7 +338,7 @@ function drawerHtml(){
     ${row('aspect','Keep cluster aspect','When resizing a window')}
     <div class="sep"></div>
     <div class="row" data-act="layouts">${I('dash')}<span>Layouts<small>Show several apps on the cluster at once</small></span><span style="flex:none;font-size:20px;color:var(--onv)">›</span></div>
-    <div class="row" data-act="adv">${I('tools')}<span>Advanced<small>Cluster transport · ${({auto:'Auto',legacy:'Legacy',dilink5:'DiLink 5'})[S.transport]}</small></span><span style="flex:none;font-size:20px;color:var(--onv)">${S.adv?'▾':'›'}</span></div>
+    <div class="row" data-act="adv">${I('tools')}<span>Advanced<small>Cluster transport · ${({auto:'Auto',legacy:'Legacy',dilink5:'DiLink 5'})[S.transport]}</small></span><span style="flex:none;color:var(--onv);display:grid;transform:rotate(${S.adv?180:0}deg)">${I('expand')}</span></div>
     <div class="adv ${S.adv?'show':''}">
       <div class="note">Which OEM protocol drives the cluster. Auto detects it from the firmware; change this only if casting fails.</div>
       ${seg('transport',[['auto','Auto'],['legacy','Legacy'],['dilink5','DiLink 5']])}
@@ -472,6 +483,8 @@ const H = new URLSearchParams(location.hash.slice(1));
 if (H.get('live')) S.live = H.get('live');
 if (H.get('adjust')) S.adjust = true;
 if (H.get('drawer')) S.drawer = true;
+if (H.get('notice')) S.notice = true;
+if (H.get('adv')) S.adv = true;
 fit(); render();
 if (H.get('menu')) openMenu(H.get('menu'), document.querySelector(`[data-app="${H.get('menu')}"]`));
 </script>

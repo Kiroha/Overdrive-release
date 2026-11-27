@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OverDrive · Projection mockup</title>
+<style>
+:root{
+  --bg:#010A07;--sc:#081915;--sch:#0E241E;--schh:#143029;--on:#E6EDE9;--onv:#B2C4BC;
+  --outline:#7D918B;--ov:#2C3F39;--pri:#5DDBB6;--onpri:#003828;--sec:#334B43;--onsec:#CDE8DC;
+  --errc:#93000A;--onerrc:#FFDAD6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#151515;font-family:Roboto,"Segoe UI",system-ui,sans-serif;color:var(--on);overflow:hidden;user-select:none;-webkit-user-select:none}
+#help{height:34px;display:flex;align-items:center;justify-content:center;gap:18px;font-size:13px;color:#bbb}
+#help b{color:#eee}
+#wrap{position:absolute;top:34px;left:0;right:0;bottom:0;display:grid;place-items:center}
+#holder{position:relative}
+#frame{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;background:var(--bg);display:flex;overflow:hidden;border-radius:6px;box-shadow:0 10px 50px rgba(0,0,0,.6)}
+svg.i{width:22px;height:22px;flex:none}
+.rail{width:80px;border-right:1px solid var(--ov);display:flex;flex-direction:column;align-items:center;padding-top:14px;gap:10px;flex:none}
+.brand{width:44px;height:44px;border-radius:8px;background:var(--sch);display:grid;place-items:center;color:var(--pri);font-weight:800;font-size:18px;margin-bottom:8px}
+.ri{width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:var(--onv)}
+.ri.on{background:var(--sec);color:var(--onsec)}
+main{width:1200px;padding:20px 24px;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;height:40px;margin-bottom:12px;flex:none}
+header h1{font-size:22px;font-weight:500}
+.chip{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:999px;font-size:13px;background:var(--sch);color:var(--onv)}
+.chip.live{background:rgba(93,219,182,.14);color:var(--pri)}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.sp{flex:1}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.ibtn{width:48px;height:48px;border-radius:8px;display:grid;place-items:center;color:var(--onv);background:var(--sc)}
+.ibtn:active,.cbtn:active{filter:brightness(1.4)}
+.hero{height:112px;border-radius:8px;background:var(--sc);display:flex;align-items:center;gap:24px;padding:0 24px;margin-bottom:16px;flex:none}
+.cl-ill{width:208px;height:78px;border:2px dashed var(--ov);border-radius:40px 40px 12px 12px;display:grid;place-items:center;color:var(--outline);font-size:11px;letter-spacing:.06em;text-transform:uppercase;flex:none}
+.hero b{display:block;font-size:18px;font-weight:500;margin-bottom:6px}
+.hero span{font-size:14px;color:var(--onv)}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--outline);margin:4px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+.tile{height:112px;border-radius:12px;background:var(--sch);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;position:relative;font-size:14px;border:2px solid transparent;cursor:pointer;transition:transform .12s}
+.tile:active,.tile.pressing{transform:scale(.95)}
+.tile.pressing{border-color:var(--onsec)}
+.ic{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;font-weight:700;font-size:23px;color:#fff;flex:none}
+.pill{position:absolute;right:7px;top:7px;width:28px;height:28px;border-radius:50%;background:var(--schh);display:grid;place-items:center;color:var(--onv)}
+.pill svg{width:15px;height:15px}
+.tile.more{border:1px dashed var(--ov);background:transparent;color:var(--pri)}
+.tile.more .ic{background:transparent;color:var(--pri);font-size:30px;font-weight:400}
+.star{position:absolute;left:9px;top:8px;font-size:12px;color:var(--pri)}
+.mirror{width:1152px;height:432px;border-radius:8px;background:#000;position:relative;overflow:hidden;flex:none;touch-action:none}
+.win{position:absolute;overflow:hidden;container-type:size;background:#111;transition:left .25s,top .25s,width .25s,height .25s}
+.adjusting .win{transition:none}
+.hud{position:absolute;left:12px;top:12px;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:6px 12px;font-size:13px;z-index:5;pointer-events:none}
+.mbtns{position:absolute;right:12px;top:12px;display:flex;gap:8px;z-index:6}
+.mbtn{height:40px;min-width:40px;border-radius:8px;background:rgba(0,0,0,.65);display:grid;place-items:center;color:var(--on);padding:0 10px;font-size:14px;font-weight:500}
+.mbtn.done{background:var(--pri);color:var(--onpri);padding:0 18px}
+.ripple{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(255,255,255,.35);pointer-events:none;animation:rip .45s ease-out forwards;z-index:4}
+@keyframes rip{from{transform:scale(.2);opacity:1}to{transform:scale(1.4);opacity:0}}
+.adj{position:absolute;border:2px solid var(--pri);z-index:5;cursor:move;background:rgba(93,219,182,.08)}
+.h{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--pri);border:3px solid #000}
+.h.nw{left:6px;top:6px;cursor:nwse-resize}.h.ne{right:6px;top:6px;cursor:nesw-resize}
+.h.sw{left:6px;bottom:6px;cursor:nesw-resize}.h.se{right:6px;bottom:6px;cursor:nwse-resize}
+.adjusting .hud{top:46px}
+.adj .sz{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);padding:4px 10px;border-radius:6px;font-size:13px;color:var(--pri);pointer-events:none}
+.dock{margin-top:12px;border-radius:8px;background:var(--sc);display:flex;flex-direction:column;gap:8px;padding:12px;flex:none}
+.drow{display:flex;align-items:center;gap:8px}
+.cbtn.tonal{background:var(--sec);color:var(--onsec);font-weight:500}
+.now{display:flex;align-items:center;gap:10px;width:170px;flex:none;cursor:pointer}
+.now .ic{width:44px;height:44px;font-size:18px;border-radius:12px}
+.now small{display:block;font-size:11px;color:var(--pri);letter-spacing:.04em}
+.now span{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:110px}
+.cbtn{height:48px;min-width:48px;border-radius:8px;background:var(--sch);display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;padding:0 12px}
+.stop{background:var(--errc);color:var(--onerrc);font-weight:500;padding:0 18px}
+.vsep{width:1px;height:48px;background:var(--ov);margin:0 6px}
+.strip{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.st{width:64px;height:64px;border-radius:12px;background:var(--sch);display:grid;place-items:center;position:relative;cursor:pointer;flex:none;border:2px solid transparent;transition:transform .12s}
+.st .ic{width:40px;height:40px;font-size:17px;border-radius:11px}
+.st.live{border-color:var(--pri);background:rgba(93,219,182,.12)}
+.st.live:after{content:"";position:absolute;bottom:4px;width:16px;height:3px;border-radius:2px;background:var(--pri)}
+.st.pressing{transform:scale(.92);border-color:var(--onsec)}
+.st.all{color:var(--pri);font-size:24px;border:1px dashed var(--ov);background:transparent}
+.hint{margin-top:10px;font-size:13px;color:var(--onv);display:flex;align-items:center;gap:8px}
+.hint svg{width:18px;height:18px}
+#frame.fs .rail,#frame.fs header,#frame.fs .dock,#frame.fs .hint{display:none}
+#frame.fs main{padding:0;width:1280px}
+#frame.fs .mirror{position:absolute;left:0;top:120px;width:1280px;height:480px;border-radius:0}
+.fsbar{display:none;position:absolute;left:50%;bottom:18px;transform:translateX(-50%);gap:8px;background:rgba(14,36,30,.92);padding:8px;border-radius:14px;z-index:20}
+#frame.fs .fsbar{display:flex}
+.fsbar .cbtn{height:56px;min-width:56px}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:30;display:none}
+.scrim.show{display:block}
+.menu{position:absolute;width:404px;background:var(--schh);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:16px;display:none;flex-direction:column;gap:10px;z-index:31}
+.menu.show{display:flex;animation:pop .14s ease-out}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.mh{display:flex;align-items:center;gap:12px}
+.mh .ic{width:44px;height:44px;font-size:18px;border-radius:12px}
+.mh b{font-size:17px;font-weight:500;display:block}
+.mh small{font-size:12px;color:var(--onv)}
+.mlbl{font-size:12px;color:var(--onv)}
+.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pr{border-radius:10px;background:var(--sch);padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;border:2px solid transparent}
+.pr.sel{border-color:var(--pri);color:var(--pri)}
+.mini{width:70px;height:26px;border-radius:13px 13px 5px 5px;border:1.5px solid var(--outline);position:relative;overflow:hidden}
+.mini i{position:absolute;top:0;bottom:0;background:var(--pri);opacity:.75}
+.item{height:52px;border-radius:10px;display:flex;align-items:center;gap:14px;padding:0 10px;font-size:15px;width:100%;text-align:left}
+.item:hover{background:var(--sch)}
+.item svg{color:var(--onv)}
+.item span{flex:1}
+.item small{color:var(--onv);font-size:12px}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--schh);border:2px solid var(--outline);position:relative;flex:none;transition:.15s}
+.sw:after{content:"";position:absolute;left:4px;top:4px;width:16px;height:16px;border-radius:50%;background:var(--outline);transition:.15s}
+.sw.on{background:var(--pri);border-color:var(--pri)}
+.sw.on:after{left:22px;top:1px;width:22px;height:22px;background:var(--onpri)}
+.sep{height:1px;background:var(--ov)}
+.cta{height:56px;border-radius:12px;background:var(--pri);color:var(--onpri);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:16px;width:100%}
+.cta.danger{background:var(--errc);color:var(--onerrc)}
+.drawer{position:absolute;right:0;top:0;bottom:0;width:440px;background:var(--sch);padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:-12px 0 40px rgba(0,0,0,.5);z-index:31;transform:translateX(105%);transition:transform .22s}
+.drawer.show{transform:none}
+.drawer h2{font-size:20px;font-weight:500;flex:1}
+.seg{display:flex}
+.seg button{flex:1;height:48px;border:1px solid var(--outline);margin-left:-1px;font-size:14px}
+.seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.seg button:last-child{border-radius:0 8px 8px 0}
+.seg button.sel{background:var(--sec);color:var(--onsec)}
+.row{display:flex;align-items:center;gap:14px;padding:4px 0;cursor:pointer}
+.row span{flex:1;font-size:15px}
+.row small{display:block;font-size:12px;color:var(--onv);margin-top:2px}
+.adv{display:none;flex-direction:column;gap:10px;padding-left:36px}
+.adv.show{display:flex}
+.note{font-size:12px;color:var(--onv);line-height:1.4}
+.sheet{position:absolute;left:50%;top:50%;width:820px;height:590px;transform:translate(-50%,-50%) scale(.96);opacity:0;pointer-events:none;background:var(--sch);border-radius:16px;z-index:31;padding:20px;display:flex;flex-direction:column;gap:14px;transition:.15s}
+.sheet.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.sheet input{height:48px;border-radius:999px;border:0;background:var(--schh);color:var(--on);font-size:15px;padding:0 20px;outline:none;width:100%}
+.sheet .grid{overflow:auto;margin:0;grid-template-columns:repeat(6,1fr);align-content:start}
+.sheet .tile{height:104px;background:var(--schh)}
+.toast{position:absolute;left:50%;bottom:26px;transform:translate(-50%,20px);background:#E6EDE9;color:#0b1a16;font-size:14px;padding:12px 18px;border-radius:10px;opacity:0;transition:.2s;z-index:50;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.v-map{position:absolute;inset:0;background:linear-gradient(135deg,#0d1b2a,#1b263b)}
+.v-map svg{position:absolute;inset:0;width:100%;height:100%}
+.v-turn{position:absolute;left:4cqh;bottom:5cqh;background:rgba(13,27,42,.94);border-radius:2cqh;padding:3cqh 5cqh}
+.v-turn b{display:block;font-size:12cqh}
+.v-turn span{font-size:5.5cqh;color:#cfd8e3}
+.v-eta{position:absolute;right:4cqh;bottom:5cqh;background:rgba(13,27,42,.94);border-radius:2cqh;padding:3cqh 5cqh;font-size:6cqh;color:#5DDBB6}
+.v-btns{position:absolute;right:4cqh;top:30cqh;display:flex;flex-direction:column;gap:3cqh}
+.v-btns i{width:15cqh;height:15cqh;border-radius:3cqh;background:rgba(13,27,42,.94);display:grid;place-items:center;font-style:normal;font-size:8cqh;color:#fff}
+.v-media{position:absolute;inset:0;display:flex;align-items:center;gap:7cqh;padding:0 9cqh;background:linear-gradient(120deg,color-mix(in srgb,var(--c) 35%,#000),#050505)}
+.v-media .art{width:60cqh;height:60cqh;border-radius:5cqh;background:linear-gradient(135deg,var(--c),#000);flex:none;box-shadow:0 2cqh 8cqh rgba(0,0,0,.6)}
+.v-media .meta{flex:1;min-width:0}
+.v-media b{font-size:10cqh;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-media em{font-style:normal;font-size:6cqh;color:#bbb}
+.v-media .bar{height:1.6cqh;background:rgba(255,255,255,.2);border-radius:1cqh;margin:6cqh 0}
+.v-media .bar i{display:block;height:100%;width:38%;background:#fff;border-radius:1cqh}
+.v-media .ctl{display:flex;gap:6cqh;align-items:center;font-size:10cqh}
+.v-media .ctl .pp{width:22cqh;height:22cqh;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;font-size:9cqh}
+.v-info{position:absolute;inset:0;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 30%,#000),#060606);padding:7cqh 8cqh;display:flex;flex-direction:column;gap:4cqh}
+.v-info h3{font-size:9cqh;font-weight:500}
+.v-info .r{background:rgba(255,255,255,.08);border-radius:3cqh;padding:4cqh 5cqh;font-size:6cqh;display:flex;justify-content:space-between}
+.v-info .big{font-size:30cqh;font-weight:300;line-height:1}
+.v-days{display:flex;gap:4cqh}
+.v-days div{flex:1;background:rgba(255,255,255,.08);border-radius:3cqh;padding:3cqh;text-align:center;font-size:5.5cqh}
+</style>
+</head>
+<body>
+<div id="help"><span><b>Interactive mockup</b></span><span>Tap an app = cast</span><span>Long-press / right-click = app menu</span><span>⚙ = projection settings</span></div>
+<div id="wrap"><div id="holder"><div id="frame"></div></div></div>
+
+<svg width="0" height="0" style="position:absolute">
+ <symbol id="cast" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6M3 13a7 7 0 0 1 7 7M3 17a3 3 0 0 1 3 3"/><circle cx="3.5" cy="20" r="1" fill="currentColor"/></symbol>
+ <symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+ <symbol id="proj" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2"/></symbol>
+ <symbol id="fs" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+ <symbol id="fsx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M9 4v5H4M15 4v5h5M15 20v-5h5M9 20v-5H4"/></symbol>
+ <symbol id="back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M15 5l-7 7 7 7"/></symbol>
+ <symbol id="home" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="vd" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path stroke="currentColor" stroke-width="2" d="M16 12h5"/></symbol>
+ <symbol id="vu" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path stroke="currentColor" stroke-width="2" d="M16 12h5M18.5 9.5v5"/></symbol>
+ <symbol id="stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></symbol>
+ <symbol id="touch" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M9 11V5a2 2 0 1 1 4 0v5l4 .8a2 2 0 0 1 1.6 2.3L18 18l-1 3H9l-3-5a1.6 1.6 0 0 1 2.6-1.9L9 15"/></symbol>
+ <symbol id="resize" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+ <symbol id="tools" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></symbol>
+ <symbol id="power" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3v8M6.3 7a8 8 0 1 0 11.4 0"/></symbol>
+ <symbol id="star" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/></symbol>
+ <symbol id="dash" viewBox="0 0 24 24"><path fill="currentColor" d="M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z"/></symbol>
+ <symbol id="car" viewBox="0 0 24 24"><path fill="currentColor" d="M18.9 6a1.5 1.5 0 0 0-1.4-1h-11a1.5 1.5 0 0 0-1.4 1L3 12v8a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h12v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-8zM5 11l1.5-4.5h11L19 11z"/></symbol>
+ <symbol id="cam" viewBox="0 0 24 24"><path fill="currentColor" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11z"/></symbol>
+ <symbol id="route" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6"/></g></symbol>
+</svg>
+
+<script>
+const I = (id, cls='i') => `<svg class="${cls}"><use href="#${id}"/></svg>`;
+const APPS = [
+  {id:'nav',name:'Navigation',c:'#2E7D32',k:'map'},
+  {id:'music',name:'Music',c:'#C2185B',k:'media',t:'Midnight Drive'},
+  {id:'pod',name:'Podcasts',c:'#6A1B9A',k:'media',t:'Episode 42 · Road Stories'},
+  {id:'weather',name:'Weather',c:'#1565C0',k:'weather'},
+  {id:'radio',name:'Radio',c:'#EF6C00',k:'media',t:'FM 101.4 · Morning Show'},
+  {id:'cal',name:'Calendar',c:'#00838F',k:'info'},
+  {id:'video',name:'Video',c:'#AD1457',k:'media',t:'Trailer · 2:31'},
+  {id:'browser',name:'Browser',c:'#455A64',k:'info'},
+  {id:'msg',name:'Messages',c:'#0277BD',k:'info'},
+  {id:'charge',name:'Charging Map',c:'#00695C',k:'map'},
+  {id:'phone',name:'Phone',c:'#388E3C',k:'info'},
+  {id:'books',name:'Audiobooks',c:'#8E24AA',k:'media',t:'Chapter 7'},
+  {id:'news',name:'News',c:'#5D4037',k:'info'},
+  {id:'notes',name:'Notes',c:'#F9A825',k:'info'},
+  {id:'files',name:'Files',c:'#546E7A',k:'info'},
+  {id:'clock',name:'Clock',c:'#3949AB',k:'info'},
+  {id:'parking',name:'Parking',c:'#00897B',k:'map'},
+  {id:'games',name:'Trivia',c:'#D84315',k:'info'},
+];
+const A = id => APPS.find(a => a.id === id);
+const PRESETS = {full:[0,0,1,1], left:[0,0,.5,1], right:[.5,0,.5,1], center:[.25,0,.5,1]};
+const PRESET_LABEL = {full:'Full', left:'Left half', right:'Right half', center:'Center'};
+const S = {
+  live:null, win:{}, fav:['nav','music','pod','weather','radio','cal'],
+  recent:['video','browser','msg','charge','phone'], auto:null,
+  fs:false, adjust:false, menuFor:null, drawer:false, sheet:false, q:'',
+  scale:'fit', autostart:false, speed:true, adas:false, aspect:true, adv:false, transport:'auto'
+};
+const winOf = id => S.win[id] || PRESETS.full;
+const presetOf = id => { const w = winOf(id); return Object.keys(PRESETS).find(k => PRESETS[k].every((v,i)=>Math.abs(v-w[i])<.001)) || null; };
+const frame = document.getElementById('frame');
+
+let SCALE = 1;
+function fit(){
+  const w = innerWidth - 24, h = innerHeight - 34 - 24;
+  SCALE = Math.min(w/1280, h/720);
+  frame.style.transform = `scale(${SCALE})`;
+  const holder = document.getElementById('holder');
+  holder.style.width = 1280*SCALE+'px'; holder.style.height = 720*SCALE+'px';
+}
+addEventListener('resize', fit);
+
+function icon(a){ return `<div class="ic" style="background:${a.c}">${a.name[0]}</div>`; }
+function tile(a){
+  return `<div class="tile" data-app="${a.id}">${S.fav.includes(a.id) && S.sheet ? '<span class="star">★</span>' : ''}<div class="pill">${I('cast','')}</div>${icon(a)}<div>${a.name}</div></div>`;
+}
+function appView(a){
+  if (a.k === 'map') return `<div class="v-map"><svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMid slice">
+      <path d="M-10 92 H410" stroke="#415a77" stroke-width="9"/><path d="M230 -10 V160" stroke="#415a77" stroke-width="9"/>
+      <path d="M60 160 L150 -10" stroke="#34495e" stroke-width="6"/><path d="M300 160 L380 40" stroke="#34495e" stroke-width="5"/>
+      <path d="M40 92 H230 V20" fill="none" stroke="#5DDBB6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="92" r="7" fill="#fff" stroke="#5DDBB6" stroke-width="3"/></svg>
+      <div class="v-turn"><b>350 m</b><span>Turn right · Maple Street</span></div>
+      <div class="v-eta">12 min · 8.4 km</div><div class="v-btns"><i>+</i><i>−</i></div></div>`;
+  if (a.k === 'media') return `<div class="v-media" style="--c:${a.c}"><div class="art"></div><div class="meta"><b>${a.t}</b><em>${a.name}</em>
+      <div class="bar"><i></i></div><div class="ctl"><span>⏮</span><span class="pp">❚❚</span><span>⏭</span></div></div></div>`;
+  if (a.k === 'weather') return `<div class="v-info" style="--c:${a.c}"><h3>Lyon · Partly cloudy</h3><div class="big">18°</div>
+      <div class="v-days"><div>Fri<br>17°</div><div>Sat<br>20°</div><div>Sun<br>15°</div><div>Mon<br>13°</div></div></div>`;
+  return `<div class="v-info" style="--c:${a.c}"><h3>${a.name}</h3>
+      <div class="r"><span>First item</span><span>09:30</span></div><div class="r"><span>Second item</span><span>11:00</span></div>
+      <div class="r"><span>Third item</span><span>14:15</span></div></div>`;
+}
+const rail = () => `<nav class="rail"><div class="brand">OD</div>
+  <div class="ri">${I('dash')}</div><div class="ri">${I('cam')}</div><div class="ri">${I('car')}</div>
+  <div class="ri on">${I('proj')}</div><div class="ri">${I('route')}</div></nav>`;
+
+function idleMain(){
+  const fav = S.fav.map(A), rest = APPS.filter(a=>!S.fav.includes(a.id)).slice(0,12);
+  return `<main>
+    <header><h1>Projection</h1></header>
+    <div class="hero"><div class="cl-ill">driver cluster</div>
+      <div style="flex:1"><b>Tap an app to cast it to the cluster</b><span>Long-press an app for its window position, size and tools.</span></div>
+      <button class="ibtn" data-act="gear" title="Projection settings">${I('gear')}</button></div>
+    ${fav.length ? `<div class="lbl">Favorites</div><div class="grid">${fav.map(tile).join('')}</div>` : ''}
+    <div class="lbl">All apps</div><div class="grid">${rest.map(tile).join('')}</div>
+  </main>`;
+}
+function liveMain(){
+  const a = A(S.live), [x,y,w,h] = winOf(a.id);
+  const stripIds = [...new Set([...S.fav, ...APPS.map(x=>x.id)])];
+  return `<main>
+    <header><h1>Projection</h1></header>
+    <div class="mirror ${S.adjust?'adjusting':''}" id="mirror">
+      <div class="win" id="win" style="left:${x*100}%;top:${y*100}%;width:${w*100}%;height:${h*100}%">${appView(a)}</div>
+      ${S.adjust ? `<div class="adj" id="adj" style="left:${x*100}%;top:${y*100}%;width:${w*100}%;height:${h*100}%">
+          <div class="h nw" data-h="nw"></div><div class="h ne" data-h="ne"></div><div class="h sw" data-h="sw"></div><div class="h se" data-h="se"></div>
+          <div class="sz" id="sz">${Math.round(w*1920)} × ${Math.round(h*720)}</div></div>` : ''}
+      <div class="hud"><span class="dot" style="color:var(--pri)"></span>${S.adjust ? 'Drag to move · drag a corner to resize' : 'Live mirror · tap and swipe to control'}</div>
+      <div class="mbtns">${S.adjust ? `<button class="mbtn done" data-act="done">Done</button>` : ''}</div>
+    </div>
+    <div class="dock">
+      <div class="drow">
+        <div class="now" data-app="${a.id}">${icon(a)}<div><small>● ON CLUSTER</small><span>${a.name}</span></div></div>
+        <button class="cbtn" data-act="key" data-k="Back" title="Back">${I('back')}</button>
+        <button class="cbtn" data-act="key" data-k="Home" title="Home">${I('home')}</button>
+        <button class="cbtn" data-act="key" data-k="Volume −" title="Volume −">${I('vd')}</button>
+        <button class="cbtn" data-act="key" data-k="Volume +" title="Volume +">${I('vu')}</button>
+        <div class="sp"></div>
+        <button class="cbtn tonal" data-act="${S.adjust?'done':'resize-live'}">${I('resize')}${S.adjust?'Done':'Resize'}</button>
+        <button class="cbtn" data-act="fs" title="Full screen">${I(S.fs?'fsx':'fs')}</button>
+        <button class="cbtn stop" data-act="stop">${I('stop')}Stop</button>
+        <button class="cbtn" data-act="gear" title="Projection settings">${I('gear')}</button>
+      </div>
+      <div class="strip">${stripIds.map(id=>`<div class="st ${id===a.id?'live':''}" data-app="${id}" title="${A(id).name}">${icon(A(id))}</div>`).join('')}</div>
+    </div>
+  </main>
+  <div class="fsbar">
+    <button class="cbtn" data-act="key" data-k="Back">${I('back')}</button><button class="cbtn" data-act="key" data-k="Home">${I('home')}</button>
+    <button class="cbtn" data-act="key" data-k="Volume −">${I('vd')}</button><button class="cbtn" data-act="key" data-k="Volume +">${I('vu')}</button>
+    <button class="cbtn stop" data-act="stop">${I('stop')}</button><button class="cbtn" data-act="fs" title="Exit full screen">${I('fsx')}</button>
+  </div>`;
+}
+function menuHtml(){
+  const id = S.menuFor; if (!id) return '';
+  const a = A(id), p = presetOf(id), isLive = S.live === id, fav = S.fav.includes(id);
+  return `<div class="mh">${icon(a)}<div><b>${a.name}</b><small>${isLive?'On cluster · ':''}Window saved for this app</small></div></div>
+    <div class="mlbl">Cluster window</div>
+    <div class="presets">${Object.keys(PRESETS).map(k=>{const [x,,w]=PRESETS[k];
+      return `<button class="pr ${p===k?'sel':''}" data-act="preset" data-p="${k}"><div class="mini"><i style="left:${x*100}%;width:${w*100}%"></i></div>${PRESET_LABEL[k]}</button>`}).join('')}</div>
+    <div class="sep"></div>
+    <button class="item" data-act="resize">${I('resize')}<span>Resize</span><small>on the mirror</small></button>
+    <button class="item" data-act="tools">${I('tools')}<span>App tools</span><small>App DPI, keyboard</small></button>
+    <button class="item" data-act="fav">${I('star')}<span>${fav?'Remove from favorites':'Add to favorites'}</span></button>
+    ${isLive ? `<button class="cta danger" data-act="stop">${I('stop')}Stop casting</button>`
+             : `<button class="cta" data-act="cast">${I('cast')}Cast to cluster</button>`}`;
+}
+function drawerHtml(){
+  const seg = (key, opts) => `<div class="seg">${opts.map(([v,l])=>`<button class="${S[key]===v?'sel':''}" data-act="set" data-k="${key}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const row = (key, title, sub) => `<div class="row" data-act="toggle" data-k="${key}"><span>${title}<small>${sub}</small></span><div class="sw ${S[key]?'on':''}"></div></div>`;
+  return `<div style="display:flex;align-items:center"><h2>Projection settings</h2><button class="ibtn" style="background:transparent;font-size:22px" data-act="close">✕</button></div>
+    <div><div class="mlbl" style="margin-bottom:8px">Mirror scaling</div>${seg('scale',[['fit','Fit'],['fill','Stretch'],['zoom','Zoom']])}</div>
+    <div class="sep"></div>
+    ${row('autostart','Auto-start on power-on','Casts the last-used app each time the car powers on')}
+    ${row('speed','Show speed on cluster','Same setting as in RoadSense')}
+    ${row('adas','Hide ADAS box while projecting','Same setting as in RoadSense')}
+    ${row('aspect','Keep cluster aspect','When resizing a window')}
+    <div class="sep"></div>
+    <div class="row" data-act="layouts">${I('dash')}<span>Layouts<small>Show several apps on the cluster at once</small></span><span style="flex:none;font-size:20px;color:var(--onv)">›</span></div>
+    <div class="row" data-act="adv">${I('tools')}<span>Advanced<small>Cluster transport · ${({auto:'Auto',legacy:'Legacy',dilink5:'DiLink 5'})[S.transport]}</small></span><span style="flex:none;font-size:20px;color:var(--onv)">${S.adv?'▾':'›'}</span></div>
+    <div class="adv ${S.adv?'show':''}">
+      <div class="note">Which OEM protocol drives the cluster. Auto detects it from the firmware; change this only if casting fails.</div>
+      ${seg('transport',[['auto','Auto'],['legacy','Legacy'],['dilink5','DiLink 5']])}
+      ${S.transport==='dilink5' ? `<div class="note">DiLink 5 projection path, panel target and geometry sliders would appear here.</div>` : ''}
+    </div>`;
+}
+function sheetHtml(){
+  const q = S.q.trim().toLowerCase();
+  const list = APPS.filter(a => a.name.toLowerCase().includes(q));
+  return `<div style="display:flex;gap:12px;align-items:center"><input id="q" placeholder="Search apps" value="${S.q}">
+      <button class="ibtn" style="font-size:22px;flex:none" data-act="close">✕</button></div>
+    <div class="grid">${list.map(tile).join('') || '<div class="note">No app found.</div>'}</div>`;
+}
+
+function render(){
+  frame.className = S.fs && S.live ? 'fs' : '';
+  frame.innerHTML = rail() + (S.live ? liveMain() : idleMain()) +
+    `<div class="scrim ${S.menuFor||S.drawer||S.sheet?'show':''}" data-act="close"></div>
+     <div class="sheet ${S.sheet?'show':''}" id="sheet">${S.sheet?sheetHtml():''}</div>
+     <div class="drawer ${S.drawer?'show':''}">${drawerHtml()}</div>
+     <div class="menu ${S.menuFor?'show':''}" id="menu">${menuHtml()}</div>
+     <div class="toast" id="toast"></div>`;
+  if (S.sheet){ const q = document.getElementById('q');
+    q.addEventListener('input', e => { S.q = e.target.value; const pos = e.target.selectionStart; render(); const n=document.getElementById('q'); n.focus(); n.setSelectionRange(pos,pos); }); }
+  if (S.menuFor && lastAnchor) placeMenu(lastAnchor);
+}
+
+let toastT;
+function toast(msg){ const t = document.getElementById('toast'); if(!t) return; t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 1800); }
+
+function cast(id){
+  if (S.live === id){ openMenu(id, document.querySelector(`[data-app="${id}"]`)); return; }
+  S.live = id; S.adjust = false; S.menuFor = null; S.sheet = false; S.q = '';
+  S.recent = [id, ...S.recent.filter(r=>r!==id)];
+  render(); toast(`${A(id).name} cast to cluster`);
+}
+let lastAnchor = null;
+function openMenu(id, el){
+  const r = el.getBoundingClientRect(), f = frame.getBoundingClientRect();
+  lastAnchor = {x:(r.left-f.left)/SCALE, y:(r.top-f.top)/SCALE, w:r.width/SCALE, h:r.height/SCALE};
+  S.menuFor = id; render();
+}
+function placeMenu(an){
+  const m = document.getElementById('menu'); const mw = 404, mh = m.offsetHeight;
+  let x = an.x + an.w + 12; if (x + mw > 1268) x = an.x - mw - 12; if (x < 12) x = Math.min(Math.max(12, an.x + an.w/2 - mw/2), 1268 - mw);
+  let y = an.y + an.h/2 - mh/2; y = Math.max(12, Math.min(y, 708 - mh));
+  m.style.left = x+'px'; m.style.top = y+'px';
+}
+function act(name, el){
+  const id = S.menuFor;
+  switch(name){
+    case 'close': S.menuFor = null; S.drawer = false; S.sheet = false; S.q=''; render(); break;
+    case 'gear': S.drawer = true; render(); break;
+    case 'all': S.sheet = true; S.menuFor = null; render(); setTimeout(()=>document.getElementById('q')?.focus(), 50); break;
+    case 'stop': { const n = A(S.live).name; S.live = null; S.fs = false; S.adjust = false; S.menuFor = null; render(); toast(`${n} stopped`); break; }
+    case 'fs': S.fs = !S.fs; render(); break;
+    case 'key': toast(`${el.dataset.k} sent to the cluster`); break;
+    case 'done': S.adjust = false; render(); toast(`Window saved for ${A(S.live).name}`); break;
+    case 'preset': S.win[id] = [...PRESETS[el.dataset.p]]; render(); toast(`${A(id).name}: ${PRESET_LABEL[el.dataset.p]}`); break;
+    case 'resize': { S.menuFor = null; if (S.live !== id){ S.live = id; S.recent=[id,...S.recent.filter(r=>r!==id)]; } S.adjust = true; S.fs = false; render(); break; }
+    case 'tools': toast('Opens the App tools dialog (App DPI, keyboard)'); break;
+    case 'auto': S.auto = S.auto === id ? null : id; render(); toast(S.auto ? `${A(id).name} will cast at power-on` : 'Auto-start off'); break;
+    case 'fav': S.fav = S.fav.includes(id) ? S.fav.filter(f=>f!==id) : [...S.fav, id].slice(-6); render(); break;
+    case 'cast': cast(id); break;
+    case 'set': S[el.dataset.k] = el.dataset.v; render(); break;
+    case 'toggle': S[el.dataset.k] = !S[el.dataset.k]; render(); break;
+    case 'adv': S.adv = !S.adv; render(); break;
+    case 'layouts': toast('Opens the existing cluster Layouts tool'); break;
+    case 'resize-live': S.adjust = true; render(); break;
+  }
+}
+let press = null, suppressClick = false, drag = null;
+frame.addEventListener('click', e => {
+  if (suppressClick){ suppressClick = false; return; }
+  const b = e.target.closest('[data-act]'); if (b && !b.closest('[data-app]')) act(b.dataset.act, b);
+});
+frame.addEventListener('pointerdown', e => {
+  const t = e.target.closest('[data-app]');
+  if (t && e.button === 0){
+    t.classList.add('pressing');
+    press = {el:t, id:t.dataset.app, x:e.clientX, y:e.clientY, fired:false};
+    press.timer = setTimeout(()=>{ press.fired = true; t.classList.remove('pressing'); openMenu(press.id, t); navigator.vibrate?.(20); }, 480);
+    return;
+  }
+  mirrorDown(e);
+});
+frame.addEventListener('pointermove', e => {
+  if (press && Math.hypot(e.clientX-press.x, e.clientY-press.y) > 12){ clearTimeout(press.timer); press.el.classList.remove('pressing'); press = null; }
+  if (drag) dragMove(e);
+});
+frame.addEventListener('pointerup', () => {
+  if (press){ clearTimeout(press.timer); press.el.classList.remove('pressing');
+    const p = press; press = null;
+    if (!p.fired){ suppressClick = true; setTimeout(()=>suppressClick=false, 0); cast(p.id); } }
+  drag = null;
+});
+frame.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const t = e.target.closest('[data-app]');
+  if (t){ if (press){ clearTimeout(press.timer); press.el.classList.remove('pressing'); press = null; } openMenu(t.dataset.app, t); }
+});
+function mirrorDown(e){
+  const mirror = e.target.closest('#mirror'); if (!mirror || e.target.closest('.mbtns')) return;
+  const r = mirror.getBoundingClientRect();
+  if (S.adjust){
+    const h = e.target.closest('[data-h]'), inAdj = e.target.closest('#adj'); if (!inAdj) return;
+    drag = {mode: h ? h.dataset.h : 'move', r, sx:e.clientX, sy:e.clientY, start:[...winOf(S.live)]};
+    return;
+  }
+  if (e.target.closest('#win')){
+    const d = document.createElement('div'); d.className = 'ripple';
+    d.style.left = (e.clientX - r.left)/SCALE + 'px'; d.style.top = (e.clientY - r.top)/SCALE + 'px';
+    mirror.appendChild(d); setTimeout(()=>d.remove(), 460);
+  }
+}
+function dragMove(e){
+  const {r, sx, sy, start, mode} = drag;
+  const dx = (e.clientX - sx)/r.width, dy = (e.clientY - sy)/r.height;
+  let [x,y,w,h] = start; const MINW = .2, MINH = .3, ratio = start[2]/start[3];
+  if (mode === 'move'){ x = Math.min(Math.max(0, x+dx), 1-w); y = Math.min(Math.max(0, y+dy), 1-h); }
+  else {
+    if (mode.includes('e')) w = start[2] + dx;
+    if (mode.includes('w')) w = start[2] - dx;
+    if (mode.includes('s')) h = start[3] + dy;
+    if (mode.includes('n')) h = start[3] - dy;
+    if (S.aspect) h = w / ratio;
+    w = Math.max(MINW, Math.min(w, 1)); h = Math.max(MINH, Math.min(h, 1));
+    if (S.aspect){ h = Math.min(w/ratio, 1); w = h*ratio; }
+    if (mode.includes('w')) x = start[0] + start[2] - w;
+    if (mode.includes('n')) y = start[1] + start[3] - h;
+    x = Math.min(Math.max(0, x), 1-w); y = Math.min(Math.max(0, y), 1-h);
+  }
+  S.win[S.live] = [x,y,w,h];
+  for (const el of [document.getElementById('win'), document.getElementById('adj')]){
+    el.style.left = x*100+'%'; el.style.top = y*100+'%'; el.style.width = w*100+'%'; el.style.height = h*100+'%';
+  }
+  document.getElementById('sz').textContent = `${Math.round(w*1920)} × ${Math.round(h*720)}`;
+}
+// Optional deep link for demos: #live=music&adjust=1&menu=music&drawer=1
+const H = new URLSearchParams(location.hash.slice(1));
+if (H.get('live')) S.live = H.get('live');
+if (H.get('adjust')) S.adjust = true;
+if (H.get('drawer')) S.drawer = true;
+fit(); render();
+if (H.get('menu')) openMenu(H.get('menu'), document.querySelector(`[data-app="${H.get('menu')}"]`));
+</script>
+</body>
+</html>
